@@ -116,7 +116,7 @@ abstract class V2RayURL {
 
   /// DNS configuration.
   Map<String, dynamic> dns = {
-    'servers': ['1.1.1.1', '1.0.0.1', '8.8.8.8', '8.8.4.4']
+    'servers': ['8.8.8.8', '8.8.4.4']
   };
 
   /// Routing configuration.

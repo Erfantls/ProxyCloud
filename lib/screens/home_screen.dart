@@ -418,44 +418,48 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     tooltip: context.tr('server_selection.auto_select'),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () async {
-                      final provider = Provider.of<V2RayProvider>(
-                        context,
-                        listen: false,
-                      );
+                  Consumer<V2RayProvider>(
+                    builder: (context, provider, _) {
+                      return IconButton(
+                        icon: const Icon(Icons.refresh),
+                        onPressed: provider.isUpdatingSubscriptions ? null : () async {
+                          final v2rayProvider = Provider.of<V2RayProvider>(
+                            context,
+                            listen: false,
+                          );
 
-                      // Show loading indicator
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            context.tr('home.updating_subscriptions'),
-                          ),
-                        ),
-                      );
-
-                      // Update all subscriptions instead of just fetching servers
-                      await provider.updateAllSubscriptions();
-                      provider.fetchNotificationStatus();
-
-                      // Show success message
-                      if (provider.errorMessage.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              context.tr('home.subscriptions_updated'),
+                          // Show loading indicator
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                context.tr('home.updating_subscriptions'),
+                              ),
                             ),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(provider.errorMessage)),
-                        );
-                        provider.clearError();
-                      }
+                          );
+
+                          // Update all subscriptions instead of just fetching servers
+                          await v2rayProvider.updateAllSubscriptions();
+                          v2rayProvider.fetchNotificationStatus();
+
+                          // Show success message
+                          if (v2rayProvider.errorMessage.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  context.tr('home.subscriptions_updated'),
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(v2rayProvider.errorMessage)),
+                            );
+                            v2rayProvider.clearError();
+                          }
+                        },
+                        tooltip: context.tr(TranslationKeys.homeRefresh),
+                      );
                     },
-                    tooltip: context.tr(TranslationKeys.homeRefresh),
                   ),
                   IconButton(
                     icon: const Icon(Icons.subscriptions),

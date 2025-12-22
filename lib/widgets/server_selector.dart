@@ -210,52 +210,56 @@ class _LoadingServerCard extends StatelessWidget {
               const SizedBox(height: 16),
               Text(context.tr(TranslationKeys.serverSelectorLoadingServers)),
               const SizedBox(height: 16),
-              TextButton(
-                onPressed: () async {
-                  final provider = Provider.of<V2RayProvider>(
-                    context,
-                    listen: false,
-                  );
-                  try {
-                    // Show loading indicator
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.tr('home.updating_subscriptions'),
-                        ),
-                      ),
-                    );
-
-                    // Update all subscriptions instead of just fetching servers
-                    await provider.updateAllSubscriptions();
-                    provider.fetchNotificationStatus();
-
-                    // Show success message
-                    if (provider.errorMessage.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            context.tr('home.subscriptions_updated'),
+              Consumer<V2RayProvider>(
+                builder: (context, provider, _) {
+                  return TextButton(
+                    onPressed: provider.isUpdatingSubscriptions ? null : () async {
+                      final v2rayProvider = Provider.of<V2RayProvider>(
+                        context,
+                        listen: false,
+                      );
+                      try {
+                        // Show loading indicator
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              context.tr('home.updating_subscriptions'),
+                            ),
                           ),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(provider.errorMessage)),
-                      );
-                      provider.clearError();
-                    }
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '${context.tr(TranslationKeys.serverSelectorErrorRefreshing)}: ${e.toString()}',
-                        ),
-                      ),
-                    );
-                  }
+                        );
+
+                        // Update all subscriptions instead of just fetching servers
+                        await v2rayProvider.updateAllSubscriptions();
+                        v2rayProvider.fetchNotificationStatus();
+
+                        // Show success message
+                        if (v2rayProvider.errorMessage.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                context.tr('home.subscriptions_updated'),
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(v2rayProvider.errorMessage)),
+                          );
+                          v2rayProvider.clearError();
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              '${context.tr(TranslationKeys.serverSelectorErrorRefreshing)}: ${e.toString()}',
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: Text(context.tr(TranslationKeys.commonRefresh)),
+                  );
                 },
-                child: Text(context.tr(TranslationKeys.commonRefresh)),
               ),
             ],
           ),
@@ -288,52 +292,56 @@ class _EmptyServerCard extends StatelessWidget {
               const SizedBox(height: 16),
               Text(context.tr(TranslationKeys.serverSelectorNoServers)),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () async {
-                  final provider = Provider.of<V2RayProvider>(
-                    context,
-                    listen: false,
-                  );
-                  try {
-                    // Show loading indicator
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.tr('home.updating_subscriptions'),
-                        ),
-                      ),
-                    );
-
-                    // Update all subscriptions instead of just fetching servers
-                    await provider.updateAllSubscriptions();
-                    provider.fetchNotificationStatus();
-
-                    // Show success message
-                    if (provider.errorMessage.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            context.tr('home.subscriptions_updated'),
+              Consumer<V2RayProvider>(
+                builder: (context, provider, _) {
+                  return ElevatedButton(
+                    onPressed: provider.isUpdatingSubscriptions ? null : () async {
+                      final v2rayProvider = Provider.of<V2RayProvider>(
+                        context,
+                        listen: false,
+                      );
+                      try {
+                        // Show loading indicator
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              context.tr('home.updating_subscriptions'),
+                            ),
                           ),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(provider.errorMessage)),
-                      );
-                      provider.clearError();
-                    }
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '${context.tr(TranslationKeys.serverSelectorErrorRefreshing)}: ${e.toString()}',
-                        ),
-                      ),
-                    );
-                  }
+                        );
+
+                        // Update all subscriptions instead of just fetching servers
+                        await v2rayProvider.updateAllSubscriptions();
+                        v2rayProvider.fetchNotificationStatus();
+
+                        // Show success message
+                        if (v2rayProvider.errorMessage.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                context.tr('home.subscriptions_updated'),
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(v2rayProvider.errorMessage)),
+                          );
+                          v2rayProvider.clearError();
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              '${context.tr(TranslationKeys.serverSelectorErrorRefreshing)}: ${e.toString()}',
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: Text(context.tr(TranslationKeys.commonRefresh)),
+                  );
                 },
-                child: Text(context.tr(TranslationKeys.commonRefresh)),
               ),
             ],
           ),

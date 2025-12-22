@@ -20,6 +20,7 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
   bool _isLoadingServers = false;
   bool _isProxyMode = false;
   bool _isInitializing = true;
+  bool _isUpdatingSubscriptions = false;  // Track when updates are in progress
 
   // Method channel for VPN control
   static const platform = MethodChannel('com.cloud.pira/vpn_control');
@@ -35,6 +36,7 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
   String get errorMessage => _errorMessage;
   V2RayService get v2rayService => _v2rayService;
   bool get isProxyMode => _isProxyMode;
+  bool get isUpdatingSubscriptions => _isUpdatingSubscriptions;  // Getter for update state
 
   // Expose V2Ray status for real-time traffic monitoring
   V2RayStatus? get currentStatus => _v2rayService.currentStatus;
@@ -666,6 +668,7 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
     _setLoading(true);
     _errorMessage = '';
     _isLoadingServers = true;
+    _isUpdatingSubscriptions = true;  // Set update state
     notifyListeners();
 
     // Clear all ping cache before updating subscriptions
@@ -745,6 +748,8 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
     } finally {
       _setLoading(false);
       _isLoadingServers = false;
+      _isUpdatingSubscriptions = false;  // Clear update state
+      notifyListeners();  // Notify listeners that update state has changed
     }
   }
 

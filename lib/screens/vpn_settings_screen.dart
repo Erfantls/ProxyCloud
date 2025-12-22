@@ -52,7 +52,7 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
       final bool savedDnsEnabled = prefs.getBool('custom_dns_enabled') ?? false;
       final String savedDnsServers =
           prefs.getString('custom_dns_servers') ??
-          '1.1.1.1\n1.0.0.1\n8.8.8.8\n8.8.4.4';
+          '8.8.8.8\n8.8.4.4';
       final int savedPingBatchSize =
           prefs.getInt(_pingBatchSizeKey) ?? 5; // Default to 5
       final bool savedProxyModeEnabled =
@@ -516,7 +516,7 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
                                         ? () {
                                             setState(() {
                                               dnsServerController.text =
-                                                  '1.1.1.1\n1.0.0.1\n8.8.8.8\n8.8.4.4';
+                                                  '8.8.8.8\n8.8.4.4';
                                             });
                                           }
                                         : null,

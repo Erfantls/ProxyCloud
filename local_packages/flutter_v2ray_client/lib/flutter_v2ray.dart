@@ -125,7 +125,7 @@ class V2ray {
   Future<String> getCoreVersion() async {
     return FlutterV2rayPlatform.instance.getCoreVersion();
   }
-  
+
   /// Gets the current connection state of the V2Ray service.
   /// Returns a [Future] that completes with a [String] representing the connection state.
   /// Possible values: "V2RAY_CONNECTED", "V2RAY_DISCONNECTED", "V2RAY_CONNECTING"

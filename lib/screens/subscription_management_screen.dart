@@ -539,12 +539,16 @@ class _SubscriptionManagementScreenState
             onPressed: () => _showHelpDialog(context),
             tooltip: context.tr(TranslationKeys.subscriptionManagementHelp),
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: () => _updateAllSubscriptions(context),
-            tooltip: context.tr(
-              TranslationKeys.subscriptionManagementUpdateAll,
-            ),
+          Consumer<V2RayProvider>(
+            builder: (context, provider, _) {
+              return IconButton(
+                icon: const Icon(Icons.refresh_rounded),
+                onPressed: provider.isUpdatingSubscriptions ? null : () => _updateAllSubscriptions(context),
+                tooltip: context.tr(
+                  TranslationKeys.subscriptionManagementUpdateAll,
+                ),
+              );
+            },
           ),
         ],
       ),

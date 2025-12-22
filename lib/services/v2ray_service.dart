@@ -258,8 +258,7 @@ class V2RayService extends ChangeNotifier {
       // Get custom DNS settings
       final bool dnsEnabled = prefs.getBool('custom_dns_enabled') ?? false;
       final String dnsServers =
-          prefs.getString('custom_dns_servers') ??
-          '1.1.1.1\n1.0.0.1\n8.8.8.8\n8.8.4.4';
+          prefs.getString('custom_dns_servers') ?? '8.8.8.8\n8.8.4.4';
 
       // Apply custom DNS settings if enabled
       if (dnsEnabled && dnsServers.isNotEmpty) {
@@ -1125,7 +1124,9 @@ class V2RayService extends ChangeNotifier {
 
       for (final config in configs) {
         futures.add(
-          _pingSingleServerFast(config).then((delay) => MapEntry(config.id, delay)),
+          _pingSingleServerFast(
+            config,
+          ).then((delay) => MapEntry(config.id, delay)),
         );
       }
 
@@ -1154,7 +1155,8 @@ class V2RayService extends ChangeNotifier {
   }
 
   /// Helper method to ping a single server with optimized settings for speed
-  Future<int> _pingSingleServerFast(V2RayConfig config) async { // Changed from Future<int?> to Future<int>
+  Future<int> _pingSingleServerFast(V2RayConfig config) async {
+    // Changed from Future<int?> to Future<int>
     try {
       await initialize();
 
@@ -1162,14 +1164,18 @@ class V2RayService extends ChangeNotifier {
       final delay = await _flutterV2ray
           .getServerDelay(config: parser.getFullConfiguration())
           .timeout(
-            const Duration(seconds: 3), // Further reduced timeout for maximum speed
+            const Duration(
+              seconds: 3,
+            ), // Further reduced timeout for maximum speed
             onTimeout: () {
               debugPrint('V2Ray fast ping timeout for ${config.remark}');
               return -1; // Return -1 on timeout for faster failure
             },
           );
 
-      return delay >= -1 && delay < 10000 ? delay : -1; // Return -1 for invalid results
+      return delay >= -1 && delay < 10000
+          ? delay
+          : -1; // Return -1 for invalid results
     } catch (e) {
       debugPrint('Error fast pinging server ${config.remark}: $e');
       return -1; // Return -1 on error for consistency

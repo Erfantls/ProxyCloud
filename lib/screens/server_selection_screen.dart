@@ -920,84 +920,88 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
         actions: [
           ...appBarActions,
           if (_selectedFilter != 'Local')
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () async {
-                try {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        context.tr(
-                          TranslationKeys.serverSelectionUpdatingServers,
+            Consumer<V2RayProvider>(
+              builder: (context, provider, _) {
+                return IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: provider.isUpdatingSubscriptions ? null : () async {
+                    try {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            context.tr(
+                              TranslationKeys.serverSelectionUpdatingServers,
+                            ),
+                          ),
+                          duration: const Duration(seconds: 1),
                         ),
-                      ),
-                      duration: const Duration(seconds: 1),
-                    ),
-                  );
+                      );
 
-                  // Clear saved pings when updating subscriptions
-                  await _clearSavedPings();
-                  _pings.clear();
-                  if (mounted) {
-                    setState(() {});
-                  }
+                      // Clear saved pings when updating subscriptions
+                      await _clearSavedPings();
+                      _pings.clear();
+                      if (mounted) {
+                        setState(() {});
+                      }
 
-                  if (_selectedFilter == 'All') {
-                    await provider.updateAllSubscriptions();
-                  } else if (_selectedFilter != 'Default') {
-                    final subscription = subscriptions.firstWhere(
-                      (sub) => sub.name == _selectedFilter,
-                      orElse: () => Subscription(
-                        id: '',
-                        name: '',
-                        url: '',
-                        lastUpdated: DateTime.now(),
-                        configIds: [],
-                      ),
-                    );
-                    if (subscription.id.isNotEmpty) {
-                      await provider.updateSubscription(subscription);
-                    }
-                  }
+                      if (_selectedFilter == 'All') {
+                        await provider.updateAllSubscriptions();
+                      } else if (_selectedFilter != 'Default') {
+                        final subscription = subscriptions.firstWhere(
+                          (sub) => sub.name == _selectedFilter,
+                          orElse: () => Subscription(
+                            id: '',
+                            name: '',
+                            url: '',
+                            lastUpdated: DateTime.now(),
+                            configIds: [],
+                          ),
+                        );
+                        if (subscription.id.isNotEmpty) {
+                          await provider.updateSubscription(subscription);
+                        }
+                      }
 
-                  setState(() {});
-                  // Ping all servers in current tab after refresh
-                  await _pingAllServersInBatches();
+                      setState(() {});
+                      // Ping all servers in current tab after refresh
+                      await _pingAllServersInBatches();
 
-                  if (provider.errorMessage.isNotEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(provider.errorMessage),
-                        backgroundColor: Colors.red.shade700,
-                        duration: const Duration(seconds: 3),
-                      ),
-                    );
-                    provider.clearError();
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.tr(
-                            TranslationKeys.serverSelectionServersUpdated,
+                      if (provider.errorMessage.isNotEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(provider.errorMessage),
+                            backgroundColor: Colors.red.shade700,
+                            duration: const Duration(seconds: 3),
+                          ),
+                        );
+                        provider.clearError();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              context.tr(
+                                TranslationKeys.serverSelectionServersUpdated,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            context.tr(
+                              TranslationKeys.serverSelectionErrorUpdating,
+                              parameters: {'error': e.toString()},
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        context.tr(
-                          TranslationKeys.serverSelectionErrorUpdating,
-                          parameters: {'error': e.toString()},
-                        ),
-                      ),
-                    ),
-                  );
-                }
+                      );
+                    }
+                  },
+                  tooltip: context.tr(TranslationKeys.serverSelectionUpdateServers),
+                );
               },
-              tooltip: context.tr(TranslationKeys.serverSelectionUpdateServers),
             ),
         ],
       ),
