@@ -109,11 +109,11 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
 
       // Update all subscriptions on app start with fresh data
       // Only update if we have subscriptions to avoid unnecessary operations
-      if (_subscriptions.isNotEmpty) {
-        debugPrint('Updating all subscriptions with fresh data...');
-        await updateAllSubscriptions();
-        debugPrint('Finished updating all subscriptions');
-      }
+      // if (_subscriptions.isNotEmpty) {
+      //   debugPrint('Updating all subscriptions with fresh data...');
+      //   await updateAllSubscriptions();
+      //   debugPrint('Finished updating all subscriptions');
+      // }
 
       // CRITICAL FIX: Enhanced synchronization with actual VPN service state
       await _enhancedSyncWithVpnServiceState();
@@ -337,20 +337,7 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
         debugPrint('  Subscription: ${sub.name} with ${sub.configIds.length} configs');
       }
 
-      // Create default subscription if no subscriptions exist
-      if (_subscriptions.isEmpty) {
-        final defaultSubscription = Subscription(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          name: 'Default Subscription',
-          url:
-              'https://raw.githubusercontent.com/darkvpnapp/CloudflarePlus/refs/heads/main/proxy',
-          lastUpdated: DateTime.now(),
-          configIds: [],
-        );
-        _subscriptions.add(defaultSubscription);
-        await _v2rayService.saveSubscriptions(_subscriptions);
-        debugPrint('Created default subscription');
-      }
+
 
       // Ensure configs are loaded and match subscription config IDs
       if (_configs.isEmpty) {

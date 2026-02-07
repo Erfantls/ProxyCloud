@@ -294,52 +294,36 @@ class _EmptyServerCard extends StatelessWidget {
               const SizedBox(height: 16),
               Consumer<V2RayProvider>(
                 builder: (context, provider, _) {
-                  return ElevatedButton(
-                    onPressed: provider.isUpdatingSubscriptions ? null : () async {
-                      final v2rayProvider = Provider.of<V2RayProvider>(
-                        context,
-                        listen: false,
-                      );
-                      try {
-                        // Show loading indicator
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              context.tr('home.updating_subscriptions'),
-                            ),
-                          ),
-                        );
-
-                        // Update all subscriptions instead of just fetching servers
-                        await v2rayProvider.updateAllSubscriptions();
-                        v2rayProvider.fetchNotificationStatus();
-
-                        // Show success message
-                        if (v2rayProvider.errorMessage.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                context.tr('home.subscriptions_updated'),
-                              ),
-                            ),
+                  return Column(
+                    children: [
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Open server selection screen even with no servers
+                          // This allows users to access local config management
+                          showServerSelectionScreen(
+                            context: context,
+                            configs: const [], // Empty list since no configs
+                            selectedConfig: null,
+                            isConnecting: false,
+                            onConfigSelected: (config) async {
+                              final v2rayProvider = Provider.of<V2RayProvider>(
+                                context,
+                                listen: false,
+                              );
+                              await v2rayProvider.selectConfig(config);
+                            },
                           );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(v2rayProvider.errorMessage)),
-                          );
-                          v2rayProvider.clearError();
-                        }
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${context.tr(TranslationKeys.serverSelectorErrorRefreshing)}: ${e.toString()}',
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    child: Text(context.tr(TranslationKeys.commonRefresh)),
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryGreen,
+                        ),
+                        child: Text(
+                          context.tr(TranslationKeys.serverSelectionImportFromClipboard),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
                   );
                 },
               ),

@@ -1047,12 +1047,38 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
           Expanded(
             child: filteredConfigs.isEmpty
                 ? Center(
-                    child: Text(
-                      context.tr(
-                        TranslationKeys.serverSelectionNoServers,
-                        parameters: {'filter': _selectedFilter},
-                      ),
-                      style: const TextStyle(color: Colors.grey),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.cloud_off,
+                          size: 48,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          context.tr(
+                            TranslationKeys.serverSelectionNoServers,
+                            parameters: {'filter': _selectedFilter},
+                          ),
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 16),
+                        if (_selectedFilter == 'Local')
+                          ElevatedButton(
+                            onPressed: _importFromClipboard,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primaryGreen,
+                            ),
+                            child: Text(
+                              context.tr(
+                                TranslationKeys.serverSelectionImportFromClipboard,
+                              ),
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+
+                      ],
                     ),
                   )
                 : ListView.builder(

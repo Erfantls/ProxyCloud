@@ -21,7 +21,6 @@ class _SubscriptionManagementScreenState
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
   bool _isUpdating = false;
-  bool _isEditingDefaultSubscription = false;
   String? _currentSubscriptionId;
 
   @override
@@ -123,7 +122,6 @@ class _SubscriptionManagementScreenState
       _nameController.clear();
       _urlController.clear();
       _isUpdating = false;
-      _isEditingDefaultSubscription = false;
       _currentSubscriptionId = null;
     });
   }
@@ -133,8 +131,6 @@ class _SubscriptionManagementScreenState
       _nameController.text = subscription.name;
       _urlController.text = subscription.url;
       _isUpdating = true;
-      _isEditingDefaultSubscription =
-          subscription.name.toLowerCase() == 'default subscription';
       _currentSubscriptionId = subscription.id;
     });
   }
@@ -404,82 +400,7 @@ class _SubscriptionManagementScreenState
     }
   }
 
-  Future<void> _resetDefaultSubscriptionUrl(
-    BuildContext context,
-    Subscription subscription,
-  ) async {
-    // Show confirmation dialog
-    final confirmed =
-        await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            backgroundColor: AppTheme.secondaryDark,
-            title: Text(
-              context.tr(
-                TranslationKeys.subscriptionManagementResetDefaultUrlTitle,
-              ),
-            ),
-            content: Text(
-              context.tr(
-                TranslationKeys
-                    .subscriptionManagementResetDefaultUrlConfirmation,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(
-                  context.tr(TranslationKeys.commonCancel),
-                  style: const TextStyle(color: AppTheme.primaryBlue),
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(
-                  context.tr(TranslationKeys.commonOk),
-                  style: const TextStyle(color: AppTheme.primaryBlue),
-                ),
-              ),
-            ],
-          ),
-        ) ??
-        false;
 
-    if (confirmed) {
-      final provider = Provider.of<V2RayProvider>(context, listen: false);
-
-      try {
-        // Create updated subscription with default URL
-        final updatedSubscription = subscription.copyWith(
-          url:
-              'https://raw.githubusercontent.com/darkvpnapp/CloudflarePlus/refs/heads/main/proxy',
-        );
-
-        // Update the subscription
-        await provider.updateSubscriptionInfo(updatedSubscription);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              context.tr(TranslationKeys.subscriptionManagementDefaultUrlReset),
-            ),
-          ),
-        );
-
-        // If we were editing this subscription, update the form
-        if (_isUpdating && _currentSubscriptionId == subscription.id) {
-          setState(() {
-            _urlController.text = updatedSubscription.url;
-          });
-        }
-      } catch (e) {
-        ErrorSnackbar.show(
-          context,
-          '${context.tr(TranslationKeys.errorUnknown)}: ${e.toString()}',
-        );
-      }
-    }
-  }
 
   Future<void> _updateAllSubscriptions(BuildContext context) async {
     final provider = Provider.of<V2RayProvider>(context, listen: false);
@@ -589,9 +510,7 @@ class _SubscriptionManagementScreenState
                         const SizedBox(height: 16),
                         TextField(
                           controller: _nameController,
-                          enabled:
-                              !_isUpdating ||
-                              (_isUpdating && !_isEditingDefaultSubscription),
+                          enabled: !_isUpdating,
                           decoration: InputDecoration(
                             labelText: context.tr(
                               TranslationKeys.subscriptionManagementName,
@@ -750,51 +669,20 @@ class _SubscriptionManagementScreenState
                                           .subscriptionManagementEdit,
                                     ),
                                   ),
-                                  if (subscription.name.toLowerCase() ==
-                                      'default subscription')
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.restart_alt,
-                                        color: Colors.orange,
-                                      ),
-                                      onPressed: () =>
-                                          _resetDefaultSubscriptionUrl(
-                                            context,
-                                            subscription,
-                                          ),
-                                      tooltip: context.tr(
-                                        TranslationKeys
-                                            .subscriptionManagementResetDefaultUrl,
-                                      ),
-                                    ),
+
                                   IconButton(
                                     icon: Icon(
                                       Icons.delete,
-                                      color:
-                                          subscription.name.toLowerCase() ==
-                                              'default subscription'
-                                          ? Colors.grey
-                                          : Colors.red,
+                                      color: Colors.red,
                                     ),
-                                    onPressed:
-                                        subscription.name.toLowerCase() ==
-                                            'default subscription'
-                                        ? null
-                                        : () => _deleteSubscription(
-                                            context,
-                                            subscription,
-                                          ),
-                                    tooltip:
-                                        subscription.name.toLowerCase() ==
-                                            'default subscription'
-                                        ? context.tr(
-                                            TranslationKeys
-                                                .subscriptionManagementCannotDeleteDefault,
-                                          )
-                                        : context.tr(
-                                            TranslationKeys
-                                                .subscriptionManagementDelete,
-                                          ),
+                                    onPressed: () => _deleteSubscription(
+                                        context,
+                                        subscription,
+                                      ),
+                                    tooltip: context.tr(
+                                      TranslationKeys
+                                          .subscriptionManagementDelete,
+                                    ),
                                   ),
                                 ],
                               ),

@@ -30,11 +30,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   void initState() {
     super.initState();
-    // Auto-update all subscriptions when app opens
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = Provider.of<V2RayProvider>(context, listen: false);
-      provider.updateAllSubscriptions();
-    });
   }
 
   Future<void> _launchTelegramUrl() async {

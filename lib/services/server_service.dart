@@ -5,9 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_v2ray_client/flutter_v2ray.dart';
 
 class ServerService {
-  // Default GitHub URL for server configurations
-  static const String defaultServerUrl =
-      'https://raw.githubusercontent.com/darkvpnapp/CloudflarePlus/refs/heads/main/proxy';
 
   Future<List<V2RayConfig>> fetchServers({required String customUrl}) async {
     try {
